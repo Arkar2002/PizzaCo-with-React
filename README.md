@@ -1,8 +1,8 @@
 # Project Title
 
-Fast Pizza with react
+Fast Pizza (with react)
 
-# Credits
+# Credit
 
 https://github.com/jonasschmedtman
 
@@ -12,4 +12,4 @@ npm run dev
 
 # Note
 
-Create this project by implementing some of my own ideas. Some of libs that I used won't be neccessary in this small app but leave it as for educational purpose.
+Create this project by implementing some of my own ideas. Some of libs that I used won't be necessary in this small app but leave them as for educational purpose.
