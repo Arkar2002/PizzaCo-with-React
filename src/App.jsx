@@ -1,51 +1,62 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import AppLayout from "./ui/AppLayout";
-import Home from "./ui/Home";
-import Menu, { loader as menuLoader } from "./features/menu/Menu";
-import Error from "./ui/Error";
-import Cart from "./features/cart/Cart";
-import CreateOrder, {
-  action as createOrderAction,
-} from "./features/order/CreateOrder";
-import Order, { loader as OrderLoader } from "./features/order/Order";
-import { action as UpdateOrderAction } from "./features/order/UpdateOrder";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import HomePage from "./pages/HomePage";
+import AppLayout from "./pages/AppLayout";
+import MenuPage from "./pages/MenuPage";
+import Order from "./feature/order/Order";
+import CartPage from "./pages/CartPage";
+import CreateOrderForm from "./feature/order/CreateOrderForm";
+import ContextProvider from "./context/ContextProvider";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 0,
+    },
+  },
+});
 
 function App() {
-  const router = createBrowserRouter([
-    {
-      element: <AppLayout />,
-      errorElement: <Error />,
-      children: [
-        {
-          path: "/",
-          element: <Home />,
-        },
-        {
-          path: "/menu",
-          element: <Menu />,
-          loader: menuLoader,
-        },
-        {
-          path: "/cart",
-          element: <Cart />,
-        },
-        {
-          path: "/order/new",
-          element: <CreateOrder />,
-          action: createOrderAction,
-        },
-        {
-          path: "/order/:id",
-          element: <Order />,
-          loader: OrderLoader,
-          action: UpdateOrderAction,
-          errorElement: <Error />,
-        },
-      ],
-    },
-  ]);
-
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <ContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="/home" replace />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/menu" element={<MenuPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/order/new" element={<CreateOrderForm />} />
+              <Route path="/order/:id" element={<Order />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        <Toaster
+          position="top-center"
+          gutter={12}
+          containerStyle={{ margin: "8px" }}
+          toastOptions={{
+            success: {
+              duration: 3000,
+            },
+            error: {
+              duration: 5000,
+            },
+          }}
+        />
+      </QueryClientProvider>
+    </ContextProvider>
+  );
 }
 
 export default App;
